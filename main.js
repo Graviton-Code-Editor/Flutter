@@ -24,15 +24,15 @@ flutter_plugin.getData(function(data){
 					exec(`flutter`,(err)=>{
 						if(err){
 							new Notification({
-							title:'Flutter',
-							content:'Flutter is not installed',
-							buttons:{
-								"Install":{
-									click:function(){
-										shell.openExternal("https://flutter.dev/docs/get-started/install")
+								title:'Flutter',
+								content:'Flutter is not installed',
+								buttons:{
+									"Install":{
+										click:function(){
+											shell.openExternal("https://flutter.dev/docs/get-started/install")
+											}
 										}
 									}
-								}
 							})
 							return;
 						}
@@ -55,24 +55,6 @@ flutter_plugin.getData(function(data){
 						})
 						return;
 					}
-					/*
-
-					new Notification({
-							title:'Flutter',
-							content:'Flutter is not installed',
-							buttons:{
-								"Install":{
-									click:function(){
-										shell.openExternal("https://flutter.dev/docs/get-started/install")
-									}
-								}
-							}
-						})
-
-
-					*/
-					console.log(selected_device[1])
-					
 					const command = exec(`cd ${graviton.getCurrentDirectory()} && flutter run -d ${selected_device[1]}`);
 
 					let times = 0;
@@ -86,7 +68,6 @@ flutter_plugin.getData(function(data){
 
 						}
 						times ++
-						
 					  	console.log(`stdout: ${data}`);
 					});
 
@@ -149,16 +130,16 @@ flutter_plugin.getData(function(data){
 					})
 
 					const devices_window = new Dialog({
-							id:'devices_window',
-							title:'Devices',
-							content:`<div id=devices_list>
+						id:'devices_window',
+						title:'Devices',
+						content:`<div id=devices_list>
 
-							</div>`,
-							buttons:{
-								Close:{
-									click:{}
-								}
+						</div>`,
+						buttons:{
+							Close:{
+								click:{}
 							}
+						}
 					})			
 				}
 			},
@@ -177,10 +158,4 @@ flutter_plugin.getData(function(data){
 			}
 		}
 	})
-
 })
-
-
-
-
-
