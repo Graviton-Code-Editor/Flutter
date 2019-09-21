@@ -1,8 +1,11 @@
 {
   "name": "Flutter",
-  "description":"A Flutter Framework integration for Graviton",
+  "description": "A Flutter Framework integration for Graviton",
   "author": "Marc Espín Sanz",
   "gitRepositoryURL": "",
   "version": "0.0.1",
-  "main":"main.js"
+  "main": "main.js",
+  "dependencies": {
+    "flutter-node": "0.0.12"
+  }
 }

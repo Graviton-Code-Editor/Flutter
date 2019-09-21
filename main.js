@@ -20,7 +20,9 @@ flutter_plugin.getData(function(data){
 		"list":{
 			"Run":{
 				click:function(){
+					const Flutter = require("flutter-node")
 					const { exec } = require('child_process');
+					let _times = 0;
 					exec(`flutter`,(err)=>{
 						if(err){
 							new Notification({
@@ -45,9 +47,6 @@ flutter_plugin.getData(function(data){
 						})
 						return;
 					}
-
-
-
 					if(graviton.getCurrentDirectory() == null){
 						new Notification({
 							title:'Flutter',
@@ -55,92 +54,66 @@ flutter_plugin.getData(function(data){
 						})
 						return;
 					}
-					const command = exec(`cd ${graviton.getCurrentDirectory()} && flutter run -d ${selected_device[1]}`);
-
-					let times = 0;
-
-					command.stdout.on('data', (data) => {
-						if(times == 0){
+					Flutter.run({
+					    path:graviton.getCurrentDirectory(),
+					    id:selected_device[1]
+					},function(output,err){
+						_times++;
+					 	if(err){
 							new Notification({
-							 	title:'Flutter',
-							 	content:'Running...'
-							 })
-
+							 title:'Flutter',
+							 content:'An error was detected.'
+							})
+							return;
 						}
-						times ++
-					  	console.log(`stdout: ${data}`);
-					});
-
-					command.on('close', (code) => {
-						if(code==0) return;
-					});
-
-					command.on('exit', (code) => {
-						if(code==0) return;
-						 new Notification({
-						 	title:'Flutter',
-						 	content:'An error was detected.'
-						 })
-					});
+						if(_times == 0){
+							new Notification({
+								title:'Flutter',
+								content:'Running...'
+							 })
+						}
+						console.log(output)
+					})
 				}
 			},
 			"Select device":{
 				click:function(){
-					const { exec } = require('child_process');
-					const command = exec(`flutter devices`);
-
-					let devices =[];
-					let times = 0;
-
-					function selectMe(me){
-						const childrens = me.parentElement.children;
-						for(let i = 0;i<childrens.length;i++){
-							childrens[i].style = "";
-						}
-						me.style = "background:var(--accentColor); color:var(--black-white);";
-						selected_device = JSON.parse(me.getAttribute("data"))
-						console.log(selected_device)
-						flutter_plugin.saveData({
-							device:selected_device
-						})
-					}
-
-					command.stdout.on('data', (data) => {
-						console.log(data);
-						if(data.match('^No')){
-								document.getElementById("devices_list").innerHTML = "No devices has been found."	
-								return;
-						}
-						times++;
-						if(times==1) return;
-						const parsed = data.split("•");
-						const device_div = document.createElement("div");
-						device_div.classList = "section-2";
-						device_div.innerText = parsed[0];
-						device_div.setAttribute("data",JSON.stringify(parsed))
-						if(selected_device[1]==parsed[1]){
-							device_div.style = "background:var(--accentColor);color:var(--black-white);";
-						}
-						device_div.onclick = function(){
-							selectMe(this)
-						}
-						document.getElementById("devices_list").appendChild(device_div)
-						devices.push(parsed)
-						console.log(devices)
-					})
-
+					const Flutter = require("flutter-node")
 					const devices_window = new Dialog({
 						id:'devices_window',
 						title:'Devices',
 						content:`<div id=devices_list>
-
 						</div>`,
 						buttons:{
 							Close:{
 								click:{}
 							}
 						}
-					})			
+					})
+					Flutter.getDevices(function(list,err){
+						if(err){
+							document.getElementById("devices_list").innerHTML = "No devices has been found."
+							return;
+						}
+						list.forEach((dev)=>{
+							const device_div = document.createElement("div");
+							if(selected_device[0] == dev[0]) device_div.style = "background:var(--accentColor); color:var(--black-white);";
+							device_div.classList = "section-2";
+							device_div.innerText = dev[0];
+							device_div.onclick = function(){
+								const childrens = device_div.parentElement.children;
+								for(let i = 0;i<childrens.length;i++){
+									childrens[i].style = "";
+								}
+								device_div.style = "background:var(--accentColor); color:var(--black-white);";
+								selected_device = dev;
+								flutter_plugin.saveData({
+									device:dev
+								})
+							}
+							document.getElementById("devices_list").appendChild(device_div)
+						})
+					})
 				}
 			},
 			"Information":{
