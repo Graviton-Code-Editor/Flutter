@@ -4,5 +4,5 @@
 
 This is a Flutter plugin for Graviton Editor, it allows you to:
 
-- Run the app directly to your device
-- You can choose between the connected devices
+- Run the app directly on your device
+- You can choose between connected devices
